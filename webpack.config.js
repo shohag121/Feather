@@ -2,7 +2,8 @@ const path = require('path');
 
 module.exports = {
     entry: './src/index.ts',
-    devtool: 'inline-source-map',
+    devtool: false,
+    mode: "development",
     devServer: {
         static: './examples',
         hot: true,
@@ -12,22 +13,22 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.ts?$/,
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
         ],
     },
     resolve: {
-        extensions: ['.tsx', '.ts', '.js'],
+        extensions: ['.ts', '.js'],
     },
     output: {
         filename: '[name].js',
         path: path.resolve(__dirname, 'dist'),
         clean: true,
-        publicPath: '/',
+        publicPath: '/dist/',
     },
     optimization: {
-        runtimeChunk: 'single',
+        runtimeChunk: false,
     },
 };

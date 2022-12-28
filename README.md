@@ -1,2 +1,2 @@
 # Feather
-Feather is a lightweight JS librery.
+Feather is a lightweight JS library.
