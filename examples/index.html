@@ -8,7 +8,91 @@
     <title>FeatherJS Examples</title>
 </head>
 <body>
-    <h1>Hello FeatherJS</h1>
+    <h1>FeatherJS Example</h1>
+
+    <div x-data="{count:0}">
+        <button @click="count++">Add</button>
+        <button @click="count--">Remove</button>
+        <span x-text="count"></span>
+        <span x-show="count > 3"> Over 3</span>
+    </div>
+
+    <script>
+
+        let directives = {
+            'x-text' : (el, value) => {
+                el.innerText = value;
+            },
+
+            'x-show' : (el, value) => {
+                el.style.display = value ? 'block' : 'none';
+            }
+        };
+
+
+        let root = document.querySelector( '[x-data]' );
+        let dataString = root.getAttribute('x-data');
+        let rawData = getInitialData();
+        let data = observe(rawData);
+        registerListeners();
+        refreshDom();
+
+
+        function registerListeners() {
+            walkDom(root, el => {
+                Array.from( el.attributes ).forEach( attribute => {
+                    if (!attribute.name.startsWith('@')) {
+                        return;
+                    }
+                    let eventName = attribute.name.replace('@', '');
+                    el.addEventListener(eventName, () => {
+                        eval(`with (data) {(${attribute.value})}`);
+                    });
+                });
+            });
+        }
+
+        function observe(data) {
+            return new Proxy( data, {
+                set(target, key, value) {
+                   target[key] = value;
+                   refreshDom();
+                }
+            });
+        }
+
+
+
+        function refreshDom(){
+            walkDom(root, el => {
+                Array.from( el.attributes ).forEach( attribute => {
+                    if ( ! Object.keys( directives ).includes( attribute.name) ) {
+                        return;
+                    }
+
+                    directives[attribute.name]( el, eval( `with (data) {(${attribute.value})}`))
+
+                });
+            });
+
+        }
+
+        function walkDom(el, callback){
+            callback(el);
+
+            el = el.firstElementChild;
+
+            while ( el ) {
+                walkDom( el, callback );
+                el = el.nextElementSibling;
+            }
+        }
+
+        function getInitialData() {
+            let dataString = root.getAttribute('x-data');
+            return eval( `(${dataString})`);
+        }
+    </script>
     <script src="main.js"></script>
 </body>
 </html>

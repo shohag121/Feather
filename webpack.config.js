@@ -5,6 +5,9 @@ module.exports = {
     devtool: 'inline-source-map',
     devServer: {
         static: './examples',
+        hot: true,
+        liveReload: true,
+        watchFiles: ['src/**/*', 'examples/**/*'],
     },
     module: {
         rules: [
